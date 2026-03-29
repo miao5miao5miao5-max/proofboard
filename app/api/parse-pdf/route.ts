@@ -1,6 +1,5 @@
 export const runtime = 'nodejs'
 
-export const runtime = 'nodejs'
 
 import { TextItem } from "pdfjs-dist/types/src/display/api";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
