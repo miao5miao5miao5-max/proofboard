@@ -1,8 +1,8 @@
+export const runtime = 'nodejs'
+
 import { TextItem } from "pdfjs-dist/types/src/display/api";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { NextRequest, NextResponse } from "next/server";
-
-export const runtime = "nodejs";
 export const maxDuration = 90;
 
 const MINIMAX_URL = "https://api.minimaxi.com/v1/chat/completions";
