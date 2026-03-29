@@ -1,3 +1,5 @@
+import { TextItem } from "pdfjs-dist/types/src/display/api";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -179,14 +181,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { PDFParse } = require("pdf-parse");
-
     let fullText = "";
     for (const file of allEntries) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const parser = new PDFParse({ data: new Uint8Array(buffer) });
-      const result = await parser.getText();
-      fullText += result.text + "\n\n";
+      const arrayBuffer = await file.arrayBuffer();
+      const document = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+      let fileText = "";
+      for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+        const page = await document.getPage(pageNumber);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .filter((item): item is TextItem => "str" in item)
+          .map((item) => item.str)
+          .join(" ")
+          .trim();
+
+        if (pageText) {
+          fileText += pageText + "\n";
+        }
+      }
+
+      fullText += fileText.trim() + "\n\n";
+      await document.destroy();
     }
 
     if (!fullText.trim()) {
